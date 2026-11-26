@@ -1,0 +1,1 @@
+isql -user sysdba -password masterkey -charset UTF-8 itimus.fdb < migr_0001.sql

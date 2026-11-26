@@ -28,8 +28,25 @@ object dm: Tdm
     Connection = FDConnection
     SQL.Strings = (
       'select *'
-      'from SP_GET_PERSONS(NULL, NULL, NULL, NULL)')
+      'from SP_GET_PERSONS(:SEX, :AGE, :FIO, :CONDATA)')
     Left = 32
     Top = 328
+    ParamData = <
+      item
+        Name = 'SEX'
+        ParamType = ptInput
+      end
+      item
+        Name = 'AGE'
+        ParamType = ptInput
+      end
+      item
+        Name = 'FIO'
+        ParamType = ptInput
+      end
+      item
+        Name = 'CONDATA'
+        ParamType = ptInput
+      end>
   end
 end
