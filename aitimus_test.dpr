@@ -5,6 +5,7 @@ uses
   Vcl.Dialogs,
   Controls,
   System.SysUtils,
+  System.UITypes,
   Person in 'Person.pas' {frmPerson: TfrmPerson},
   MainForm in 'MainForm.pas' {frmAuthorize: TfrmAuthorize},
   DataModule in 'DataModule.pas' {dm: TDataModule},
@@ -50,7 +51,7 @@ begin
       if AuthOk then
       begin
         Application.CreateForm(TfrmPerson, frmPerson);
-  try
+        try
           frmPerson.SetDataModule(dm);
           frmPerson.ShowModal;
         finally
@@ -63,4 +64,5 @@ begin
   finally
     dm.Free;
   end;
+  Application.Run;
 end.

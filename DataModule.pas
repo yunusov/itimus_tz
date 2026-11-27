@@ -8,26 +8,30 @@ uses
   FireDAC.Stan.Def, FireDAC.Stan.Pool, FireDAC.Stan.Async, FireDAC.Phys,
   FireDAC.Phys.FB, FireDAC.VCLUI.Wait, Data.DB, FireDAC.Comp.Client,
   FireDAC.Phys.IBBase, FireDAC.Stan.Param, FireDAC.DatS, FireDAC.DApt.Intf,
-  FireDAC.DApt, FireDAC.Comp.DataSet, IniFiles;
+  FireDAC.DApt, FireDAC.Comp.DataSet, IniFiles, System.IOUtils;
 
 type
   Tdm = class(TDataModule)
     FDPhysFBDriverLink1: TFDPhysFBDriverLink;
     FDConnection: TFDConnection;
     dsPerson: TDataSource;
-    qPerson: TFDQuery;
-    qType: TFDQuery;
     dsType: TDataSource;
     dsContact: TDataSource;
-    qContact: TFDQuery;
+    spPerson: TFDStoredProc;
+    spContact: TFDStoredProc;
+    spType: TFDStoredProc;
     procedure dsPersonDataChange(Sender: TObject; Field: TField);
     procedure FDConnectionAfterConnect(Sender: TObject);
     procedure DataModuleCreate(Sender: TObject);
+    procedure spPersonBeforePost(DataSet: TDataSet);
+    procedure spTypeBeforeOpen(DataSet: TDataSet);
+    procedure spContactBeforeOpen(DataSet: TDataSet);
   private
     { Private declarations }
   public
     { Public declarations }
     IniPath: string;
+    procedure logDataSet(DataSet: TDataSet);
   end;
 
 implementation
@@ -42,9 +46,9 @@ end;
 
 procedure Tdm.dsPersonDataChange(Sender: TObject; Field: TField);
 begin
-  qContact.Close;
-  qContact.ParamByName('P_PERSON_ID').AsInteger := qPerson.FieldByName('ID').AsInteger;
-  qContact.Open;
+  spContact.Close;
+  spContact.ParamByName('P_PERSON_ID').AsInteger := spPerson.FieldByName('ID').AsInteger;
+  spContact.Open;
 end;
 
 procedure Tdm.FDConnectionAfterConnect(Sender: TObject);
@@ -58,6 +62,49 @@ begin
   finally
     Ini.Free;
   end;
+end;
+
+procedure Tdm.logDataSet(DataSet: TDataSet);
+var
+  LogPath: string;
+  i: Integer;
+  s: string;
+  q: TFDStoredProc;
+begin
+  if DataSet is TFDStoredProc then
+  begin
+    q := TFDStoredProc(DataSet);
+    LogPath := ExtractFilePath(ParamStr(0)) + 'query_log.txt';
+    s := '=== QUERY OPEN ===' + #13#10;
+    s := s + 'Date: ' + FormatDateTime('dd-mm-yyyy hh:nn:ss', Now) + #13#10;
+    s := s + 'DataSet: ' + q.Name + #13#10;
+    s := s + 'SP Name: ' + q.StoredProcName + #13#10;
+    s := s + 'PARAMETERS:' + #13#10;
+    for i := 0 to q.Params.Count - 1 do
+      s := s + Format('  %s = %s (DataType: %d)', [
+        q.Params[i].Name,
+        q.Params[i].AsString,
+        Integer(q.Params[i].DataType)
+      ]);
+    s := s + #13#10 + #13#10;
+
+    TFile.AppendAllText(LogPath, s, TEncoding.UTF8);
+  end;
+end;
+
+procedure Tdm.spContactBeforeOpen(DataSet: TDataSet);
+begin
+  logDataSet(DataSet);
+end;
+
+procedure Tdm.spPersonBeforePost(DataSet: TDataSet);
+begin
+  logDataSet(DataSet);
+end;
+
+procedure Tdm.spTypeBeforeOpen(DataSet: TDataSet);
+begin
+  logDataSet(DataSet);
 end;
 
 end.

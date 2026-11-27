@@ -68,10 +68,10 @@ implementation
 procedure TfrmPerson.lDeletePersonClick(Sender: TObject);
 var sp: TFDStoredProc;
 begin
-  if FDataModule.qPerson.IsEmpty then Exit;
+  if FDataModule.spPerson.IsEmpty then Exit;
   if MessageDlg('Удалить "' +
-      FDataModule.qPerson.FieldByName('Name').AsString + ' ' +
-      FDataModule.qPerson.FieldByName('Surname').AsString +
+      FDataModule.spPerson.FieldByName('Name').AsString + ' ' +
+      FDataModule.spPerson.FieldByName('Surname').AsString +
       '" и все его контакты?', mtConfirmation,
     [mbYes, mbNo], 0) <> mrYes then Exit;
 
@@ -80,10 +80,11 @@ begin
     try
       sp.Connection := FDataModule.FDConnection;
       sp.StoredProcName := 'SP_DEL_PERSON';
-      sp.Params.Add('P_ID', FDataModule.qPerson.FieldByName('ID').AsInteger);
+      sp.Params.Add('P_ID', FDataModule.spPerson.FieldByName('ID').AsInteger);
+      FDataModule.logDataSet(sp);
 
       sp.ExecProc;
-      FDataModule.qPerson.Refresh;
+      FDataModule.spPerson.Refresh;
     except
       on E: Exception do
         MessageDlg('Ошибка удаления: ' + E.Message, mtError, [mbOK], 0);
@@ -132,12 +133,13 @@ begin
     try
       sp.Connection := FDataModule.FDConnection;
       sp.StoredProcName := 'SP_ADD_CONTACT';
-      sp.Params.Add('P_PERSON_ID', FDataModule.qPerson.FieldByName('ID').AsInteger);
-      sp.Params.Add('P_CONTACT_TYPE_ID', FDataModule.qContact.FieldByName('CT_ID').AsInteger);
+      sp.Params.Add('P_PERSON_ID', FDataModule.spPerson.FieldByName('ID').AsInteger);
+      sp.Params.Add('P_CONTACT_TYPE_ID', FDataModule.spContact.FieldByName('CT_ID').AsInteger);
       sp.Params.Add('P_VAL', leContactData.Text);
+      FDataModule.logDataSet(sp);
 
       sp.ExecProc;
-      FDataModule.qContact.Refresh;
+      FDataModule.spContact.Refresh;
     except
       on E: EIBNativeException do begin
         if E.Message.Contains('_UNIQUE') then
@@ -189,9 +191,10 @@ begin
       sp.Params.Add('P_SECOND_NAME', leSecName.Text);
       sp.Params.Add('P_SEX', cbSex.ItemIndex = 1);
       sp.Params.Add('P_DOB', DateToStr(dpDob.Date));
+      FDataModule.logDataSet(sp);
 
       sp.ExecProc;
-      FDataModule.qPerson.Refresh;
+      FDataModule.spPerson.Refresh;
     except
       on E: EIBNativeException do begin
         if E.Message.Contains('_UNIQUE') then
@@ -208,13 +211,14 @@ end;
 
 procedure TfrmPerson.bAllUsersClick(Sender: TObject);
 begin
-  FDataModule.qPerson.ParamByName('SEX').Value := NULL;
-  FDataModule.qPerson.ParamByName('AGE').Value := NULL;
-  FDataModule.qPerson.ParamByName('FIO').Value := NULL;
-  FDataModule.qPerson.ParamByName('CONDATA').Value := NULL;
+  FDataModule.spPerson.Close;
+  FDataModule.spPerson.ParamByName('P_SEX').Value := NULL;
+  FDataModule.spPerson.ParamByName('P_AGE').Value := NULL;
+  FDataModule.spPerson.ParamByName('P_FIO').Value := NULL;
+  FDataModule.spPerson.ParamByName('P_CONTACT_DATA').Value := NULL;
 
-  FDataModule.qPerson.Refresh;
-  FDataModule.qContact.Refresh;
+  FDataModule.spPerson.Open;
+  FDataModule.spContact.Refresh;
 end;
 
 procedure TfrmPerson.bContactTypesClick(Sender: TObject);
@@ -232,10 +236,10 @@ end;
 procedure TfrmPerson.bDeleteConDataClick(Sender: TObject);
 var  sp: TFDStoredProc;
 begin
-  if FDataModule.qContact.FieldByName('ID').Value = NULL then Exit;
+  if FDataModule.spContact.FieldByName('ID').Value = NULL then Exit;
   if MessageDlg('Удалить значение "' +
-      FDataModule.qContact.FieldByName('VAL').AsString + '" типа "' +
-      FDataModule.qContact.FieldByName('NAME').AsString +
+      FDataModule.spContact.FieldByName('VAL').AsString + '" типа "' +
+      FDataModule.spContact.FieldByName('NAME').AsString +
       '"?', mtConfirmation,
     [mbYes, mbNo], 0) <> mrYes then Exit;
 
@@ -244,16 +248,17 @@ begin
     try
       sp.Connection := FDataModule.FDConnection;
       sp.StoredProcName := 'SP_DEL_CONTACT';
-      sp.Params.Add('P_CONTACT_ID', FDataModule.qContact.FieldByName('ID').AsInteger);
+      sp.Params.Add('P_CONTACT_ID', FDataModule.spContact.FieldByName('ID').AsInteger);
+      FDataModule.logDataSet(sp);
 
       sp.ExecProc;
-      FDataModule.qContact.Refresh;
+      FDataModule.spContact.Refresh;
     except
       on E: Exception do
         MessageDlg('Ошибка удаления контакта: ' + E.Message, mtError, [mbOK], 0);
     end;
   finally
-    sp.Free
+    sp.Free;
   end;
 end;
 
@@ -271,14 +276,14 @@ begin
   if string(leAge.Text).Length > 0
   then age := leAge.Text;
 
-
-  FDataModule.qPerson.ParamByName('SEX').Value := sex;
-  FDataModule.qPerson.ParamByName('AGE').Value := age;
-  FDataModule.qPerson.ParamByName('FIO').Value :=
+  FDataModule.spPerson.Close;
+  FDataModule.spPerson.ParamByName('P_SEX').Value := sex;
+  FDataModule.spPerson.ParamByName('P_AGE').Value := age;
+  FDataModule.spPerson.ParamByName('P_FIO').Value :=
     leName.Text + leSecName.Text + leSurname.Text;
-  FDataModule.qPerson.ParamByName('CONDATA').Value := leContactData.Text;
+  FDataModule.spPerson.ParamByName('P_CONTACT_DATA').Value := leContactData.Text;
 
-  FDataModule.qPerson.Refresh;
+  FDataModule.spPerson.Open;
 end;
 
 procedure TfrmPerson.FormClose(Sender: TObject; var Action: TCloseAction);
@@ -305,14 +310,13 @@ begin
 end;
 
 procedure TfrmPerson.FormShow(Sender: TObject);
-var i: integer;
 begin
   if not Assigned(FDataModule) then
     raise Exception.Create('TfrmPerson: свойство DataModule не назначен перед открытием');
 
   try
-    FDataModule.qPerson.Open;
-    FDataModule.qContact.Open;
+    FDataModule.spPerson.Open;
+    FDataModule.spContact.Open;
   except
     on E: Exception do
         MessageDlg('Ошибка получения данных: ' + E.Message, mtError, [mbOK], 0);

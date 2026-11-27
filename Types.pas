@@ -51,9 +51,11 @@ begin
       sp.Connection := FDataModule.FDConnection;
       sp.StoredProcName := 'SP_ADD_TYPE';
       sp.Params.Add('P_NAME', leTypeName.Text);
+      FDataModule.logDataSet(sp);
 
       sp.ExecProc;
-      FDataModule.qType.Refresh;
+      FDataModule.spType.Close;
+      FDataModule.spType.Open;
     except
       on E: EIBNativeException do begin
         if E.Message.Contains('_UNIQUE') then
@@ -72,9 +74,9 @@ procedure TfrmTypes.bDeleteTypeClick(Sender: TObject);
 var
   sp: TFDStoredProc;
 begin
-  if FDataModule.qType.IsEmpty then Exit;
+  if FDataModule.spType.IsEmpty then Exit;
   if MessageDlg('Удалить тип контакта "' +
-      FDataModule.qType.FieldByName('Name').AsString +
+      FDataModule.spType.FieldByName('Name').AsString +
       '"?', mtConfirmation,
     [mbYes, mbNo], 0) <> mrYes then Exit;
 
@@ -83,10 +85,11 @@ begin
     try
       sp.Connection := FDataModule.FDConnection;
       sp.StoredProcName := 'SP_DEL_TYPE';
-      sp.Params.Add('P_ID', FDataModule.qType.FieldByName('ID').AsInteger);
+      sp.Params.Add('P_ID', FDataModule.spType.FieldByName('ID').AsInteger);
+      FDataModule.logDataSet(sp);
 
       sp.ExecProc;
-      FDataModule.qType.Refresh;
+      FDataModule.spType.Refresh;
     except
       on E: Exception do
         MessageDlg('Ошибка удаления типа: ' + E.Message, mtError, [mbOK], 0);
@@ -100,7 +103,7 @@ procedure TfrmTypes.FormClose(Sender: TObject; var Action: TCloseAction);
 var
   Ini: TIniFile;
 begin
-  FDataModule.qType.Close;
+  FDataModule.spType.Close;
 
   Ini := TIniFile.Create(FDataModule.IniPath);
   try
@@ -117,7 +120,7 @@ begin
     raise Exception.Create('TfrmTypes: свойство DataModule не назначен перед открытием');
 
   try
-    FDataModule.qType.Open;
+    FDataModule.spType.Open;
   except
     on E: Exception do
         MessageDlg('Ошибка получения данных: ' + E.Message, mtError, [mbOK], 0);
