@@ -1,6 +1,7 @@
-object frmAutorize: TfrmAutorize
+object frmAuthorize: TfrmAuthorize
   Left = 1062
   Top = 609
+  BorderIcons = [biSystemMenu]
   BorderStyle = bsDialog
   Caption = #1040#1081#1090#1080#1084#1091#1089' '#1058#1047
   ClientHeight = 228
@@ -11,7 +12,7 @@ object frmAutorize: TfrmAutorize
   Font.Height = -12
   Font.Name = 'Segoe UI'
   Font.Style = []
-  Position = poDesktopCenter
+  OnClose = FormClose
   TextHeight = 15
   object leUsername: TLabeledEdit
     Left = 8
@@ -42,7 +43,7 @@ object frmAutorize: TfrmAutorize
     Width = 75
     Height = 25
     Caption = #1054#1090#1084#1077#1085#1072
-    TabOrder = 2
+    TabOrder = 5
     OnClick = bCancelClick
   end
   object bConnect: TButton
@@ -51,8 +52,9 @@ object frmAutorize: TfrmAutorize
     Width = 75
     Height = 25
     Caption = #1057#1086#1077#1076#1080#1085#1080#1090#1100
+    Default = True
     ModalResult = 1
-    TabOrder = 3
+    TabOrder = 4
     OnClick = bConnectClick
   end
   object bOpenDialog: TButton
@@ -61,7 +63,7 @@ object frmAutorize: TfrmAutorize
     Width = 33
     Height = 25
     Caption = '...'
-    TabOrder = 4
+    TabOrder = 2
     OnClick = bOpenDialogClick
   end
   object lePathDB: TLabeledEdit
@@ -72,7 +74,7 @@ object frmAutorize: TfrmAutorize
     EditLabel.Width = 91
     EditLabel.Height = 15
     EditLabel.Caption = #1055#1091#1090#1100' '#1082' '#1092#1072#1081#1083#1091' '#1041#1044
-    TabOrder = 5
+    TabOrder = 3
     Text = ''
   end
   object OpenDialog1: TOpenDialog

@@ -9,7 +9,7 @@ uses
   FireDAC.Stan.Error, FireDAC.DatS, FireDAC.Phys.Intf, FireDAC.DApt.Intf,
   FireDAC.Stan.Async, FireDAC.DApt, Data.DB, Vcl.Grids, Vcl.DBGrids,
   FireDAC.Comp.DataSet, FireDAC.Comp.Client, Vcl.ExtCtrls, Vcl.Buttons,
-  Vcl.DBCtrls, System.UITypes, FireDAC.Phys.IBWrapper,
+  Vcl.DBCtrls, System.UITypes, FireDAC.Phys.IBWrapper, IniFiles,
   DataModule, Vcl.StdCtrls, Vcl.Mask, Vcl.WinXPickers, Types, Vcl.Menus;
 
 type
@@ -21,8 +21,6 @@ type
     Nbgs1: TMenuItem;
     N1: TMenuItem;
     N2: TMenuItem;
-    Panel1: TPanel;
-    gContact: TDBGrid;
     GroupBox1: TGroupBox;
     leName: TLabeledEdit;
     leSurname: TLabeledEdit;
@@ -40,6 +38,7 @@ type
     leContactData: TLabeledEdit;
     bAddContactData: TButton;
     bDeleteConData: TButton;
+    gContact: TDBGrid;
     procedure FormShow(Sender: TObject);
     procedure lDeletePersonClick(Sender: TObject);
     procedure bAddPersonClick(Sender: TObject);
@@ -51,9 +50,11 @@ type
     procedure bAddContactDataClick(Sender: TObject);
     procedure bDeleteConDataClick(Sender: TObject);
     procedure FormCloseQuery(Sender: TObject; var CanClose: Boolean);
+    procedure FormClose(Sender: TObject; var Action: TCloseAction);
   private
     { Private declarations }
     FDataModule: Tdm;
+    procedure FormInit;
   public
     { Public declarations }
     property DataModule: TDM read FDataModule write FDataModule;
@@ -106,6 +107,7 @@ end;
 procedure TfrmPerson.SetDataModule(const Value: TDM);
 begin
   FDataModule := Value;
+  FormInit;
 
   if Assigned(FDataModule) then
   begin
@@ -185,7 +187,7 @@ begin
       sp.Params.Add('P_SURNAME', leSurname.Text);
       sp.Params.Add('P_NAME', leName.Text);
       sp.Params.Add('P_SECOND_NAME', leSecName.Text);
-      sp.Params.Add('P_SEX', cbSex.Text = 'МУЖ.');
+      sp.Params.Add('P_SEX', cbSex.ItemIndex = 1);
       sp.Params.Add('P_DOB', DateToStr(dpDob.Date));
 
       sp.ExecProc;
@@ -261,9 +263,9 @@ begin
   sex := NULL;
   age := NULL;
 
-  if cbSex.Text = 'МУЖ.'
+  if cbSex.ItemIndex = 1
   then sex := True
-  else if  cbSex.Text = 'ЖЕН.'
+  else if  cbSex.ItemIndex = 2
   then sex := False;
 
   if string(leAge.Text).Length > 0
@@ -277,6 +279,19 @@ begin
   FDataModule.qPerson.ParamByName('CONDATA').Value := leContactData.Text;
 
   FDataModule.qPerson.Refresh;
+end;
+
+procedure TfrmPerson.FormClose(Sender: TObject; var Action: TCloseAction);
+var
+  Ini: TIniFile;
+begin
+  Ini := TIniFile.Create(FDataModule.IniPath);
+  try
+    Ini.WriteInteger('frmPerson', 'Left', Left);
+    Ini.WriteInteger('frmPerson', 'Top', Top);
+  finally
+    Ini.Free;
+  end;
 end;
 
 procedure TfrmPerson.FormCloseQuery(Sender: TObject; var CanClose: Boolean);
@@ -295,8 +310,27 @@ begin
   if not Assigned(FDataModule) then
     raise Exception.Create('TfrmPerson: свойство DataModule не назначен перед открытием');
 
-  FDataModule.qPerson.Open;
-  FDataModule.qContact.Open;
+  try
+    FDataModule.qPerson.Open;
+    FDataModule.qContact.Open;
+  except
+    on E: Exception do
+        MessageDlg('Ошибка получения данных: ' + E.Message, mtError, [mbOK], 0);
+  end;
+end;
+
+procedure TfrmPerson.FormInit;
+var
+  Ini: TIniFile;
+  i: integer;
+begin
+  Ini := TIniFile.Create(FDataModule.IniPath);
+  try
+    Left := Ini.ReadInteger('frmPerson', 'Left', Left);
+    Top := Ini.ReadInteger('frmPerson', 'Top', Top);
+  finally
+    Ini.Free;
+  end;
 
   for i := 0 to 4 do
       gPerson.Columns[i].Width := 100;

@@ -6,7 +6,7 @@ uses
   Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
   Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Data.DB, Vcl.StdCtrls, Vcl.Mask,
   Vcl.ExtCtrls, Vcl.Grids, Vcl.DBGrids, FireDAC.Comp.Client, System.UITypes, FireDAC.Phys.IBWrapper,
-  DataModule;
+  DataModule, IniFiles;
 
 type
   TfrmTypes = class(TForm)
@@ -22,6 +22,7 @@ type
   private
     { Private declarations }
     FDataModule: Tdm;
+    procedure FormInit;
   public
     { Public declarations }
     property DataModule: TDM read FDataModule write FDataModule;
@@ -96,8 +97,18 @@ begin
 end;
 
 procedure TfrmTypes.FormClose(Sender: TObject; var Action: TCloseAction);
+var
+  Ini: TIniFile;
 begin
- FDataModule.qType.Close;
+  FDataModule.qType.Close;
+
+  Ini := TIniFile.Create(FDataModule.IniPath);
+  try
+    Ini.WriteInteger('frmTypes', 'Left', Left);
+    Ini.WriteInteger('frmTypes', 'Top', Top);
+  finally
+    Ini.Free;
+  end;
 end;
 
 procedure TfrmTypes.FormShow(Sender: TObject);
@@ -105,16 +116,35 @@ begin
   if not Assigned(FDataModule) then
     raise Exception.Create('TfrmTypes: свойство DataModule не назначен перед открытием');
 
-  FDataModule.qType.Open;
+  try
+    FDataModule.qType.Open;
+  except
+    on E: Exception do
+        MessageDlg('Ошибка получения данных: ' + E.Message, mtError, [mbOK], 0);
+  end;
 end;
 
 procedure TfrmTypes.SetDataModule(const Value: TDM);
 begin
   FDataModule := Value;
+  FormInit;
 
   if Assigned(FDataModule) then
   begin
     gType.DataSource := FDataModule.dsType;
+  end;
+end;
+
+procedure TfrmTypes.FormInit;
+var
+  Ini: TIniFile;
+begin
+  Ini := TIniFile.Create(FDataModule.IniPath);
+  try
+    Left := Ini.ReadInteger('frmTypes', 'Left', Left);
+    Top := Ini.ReadInteger('frmTypes', 'Top', Top);
+  finally
+    Ini.Free;
   end;
 end;
 

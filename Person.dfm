@@ -3,7 +3,7 @@ object frmPerson: TfrmPerson
   Top = 582
   Caption = #1057#1087#1088#1072#1074#1086#1095#1085#1080#1082' '#1082#1086#1085#1090#1072#1082#1090#1086#1074
   ClientHeight = 606
-  ClientWidth = 824
+  ClientWidth = 1067
   Color = clBtnFace
   Constraints.MinHeight = 665
   Constraints.MinWidth = 840
@@ -13,25 +13,24 @@ object frmPerson: TfrmPerson
   Font.Name = 'Segoe UI'
   Font.Style = []
   Menu = MainMenu1
-  Position = poDesktopCenter
+  OnClose = FormClose
   OnCloseQuery = FormCloseQuery
   OnShow = FormShow
   TextHeight = 15
   object Splitter1: TSplitter
-    Left = 161
+    Left = 281
     Top = 0
     Height = 606
-    ExplicitLeft = 208
-    ExplicitTop = 240
-    ExplicitHeight = 100
+    ExplicitLeft = 250
   end
   object Panel2: TPanel
-    Left = 640
+    Left = 883
     Top = 0
     Width = 184
     Height = 606
     Align = alRight
     TabOrder = 0
+    ExplicitLeft = 640
     object GroupBox1: TGroupBox
       Left = 1
       Top = 1
@@ -208,9 +207,9 @@ object frmPerson: TfrmPerson
     end
   end
   object gPerson: TDBGrid
-    Left = 164
+    Left = 284
     Top = 0
-    Width = 476
+    Width = 599
     Height = 606
     Align = alClient
     DataSource = dm.dsPerson
@@ -280,52 +279,43 @@ object frmPerson: TfrmPerson
         Visible = True
       end>
   end
-  object Panel1: TPanel
+  object gContact: TDBGrid
     Left = 0
     Top = 0
-    Width = 161
+    Width = 281
     Height = 606
     Align = alLeft
-    Caption = 'Panel1'
+    DataSource = dm.dsContact
+    Options = [dgTitles, dgIndicator, dgColumnResize, dgColLines, dgRowLines, dgTabs, dgConfirmDelete, dgCancelOnExit, dgTitleClick, dgTitleHotTrack]
     TabOrder = 2
-    object gContact: TDBGrid
-      Left = 1
-      Top = 1
-      Width = 159
-      Height = 604
-      Align = alClient
-      DataSource = dm.dsContact
-      Options = [dgTitles, dgIndicator, dgColumnResize, dgColLines, dgRowLines, dgTabs, dgConfirmDelete, dgCancelOnExit, dgTitleClick, dgTitleHotTrack]
-      TabOrder = 0
-      TitleFont.Charset = DEFAULT_CHARSET
-      TitleFont.Color = clWindowText
-      TitleFont.Height = -12
-      TitleFont.Name = 'Segoe UI'
-      TitleFont.Style = []
-      Columns = <
-        item
-          Expanded = False
-          FieldName = 'VAL'
-          Title.Caption = #1047#1085#1072#1095#1077#1085#1080#1077
-          Title.Font.Charset = DEFAULT_CHARSET
-          Title.Font.Color = clWindowText
-          Title.Font.Height = -12
-          Title.Font.Name = 'Segoe UI'
-          Title.Font.Style = [fsBold]
-          Visible = True
-        end
-        item
-          Expanded = False
-          FieldName = 'NAME'
-          Title.Caption = #1058#1080#1087
-          Title.Font.Charset = DEFAULT_CHARSET
-          Title.Font.Color = clWindowText
-          Title.Font.Height = -12
-          Title.Font.Name = 'Segoe UI'
-          Title.Font.Style = [fsBold]
-          Visible = True
-        end>
-    end
+    TitleFont.Charset = DEFAULT_CHARSET
+    TitleFont.Color = clWindowText
+    TitleFont.Height = -12
+    TitleFont.Name = 'Segoe UI'
+    TitleFont.Style = []
+    Columns = <
+      item
+        Expanded = False
+        FieldName = 'VAL'
+        Title.Caption = #1047#1085#1072#1095#1077#1085#1080#1077
+        Title.Font.Charset = DEFAULT_CHARSET
+        Title.Font.Color = clWindowText
+        Title.Font.Height = -12
+        Title.Font.Name = 'Segoe UI'
+        Title.Font.Style = [fsBold]
+        Visible = True
+      end
+      item
+        Expanded = False
+        FieldName = 'NAME'
+        Title.Caption = #1058#1080#1087
+        Title.Font.Charset = DEFAULT_CHARSET
+        Title.Font.Color = clWindowText
+        Title.Font.Height = -12
+        Title.Font.Name = 'Segoe UI'
+        Title.Font.Style = [fsBold]
+        Visible = True
+      end>
   end
   object MainMenu1: TMainMenu
     Left = 584

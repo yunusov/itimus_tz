@@ -2,35 +2,65 @@ program aitimus_test;
 
 uses
   Vcl.Forms,
+  Vcl.Dialogs,
   Controls,
+  System.SysUtils,
   Person in 'Person.pas' {frmPerson: TfrmPerson},
-  MainForm in 'MainForm.pas' {frmAutorize: TfrmAutorize},
-  DataModule in 'DataModule.pas' {dm: TDataModule};
+  MainForm in 'MainForm.pas' {frmAuthorize: TfrmAuthorize},
+  DataModule in 'DataModule.pas' {dm: TDataModule},
+  Types in 'Types.pas' {frmTypes};
 
 {$R *.res}
 
 var
-  frmAutorize: TfrmAutorize;
+  frmAuthorize: TfrmAuthorize;
   frmPerson: TfrmPerson;
   dm: Tdm;
+
+  i: integer;
+  AuthOk: Boolean;
 begin
   Application.Initialize;
   Application.MainFormOnTaskbar := True;
+
   dm := Tdm.Create(nil);
-  frmAutorize := TfrmAutorize.Create(nil);
   try
-    frmAutorize.SetDataModule(dm);
-    if frmAutorize.ShowModal=mrOk then
+    frmAuthorize := TfrmAuthorize.Create(nil);
     try
-      Application.CreateForm(TfrmPerson, frmPerson);
-  frmPerson.SetDataModule(dm);
-      frmPerson.ShowModal;
+      frmAuthorize.SetDataModule(dm);
+
+      AuthOk := False;
+      for i := 0 to 2 do
+      begin
+        if frmAuthorize.ShowModal = mrOk then
+        begin
+          try
+            dm.FDConnection.Open;
+            AuthOk := dm.FDConnection.Connected;
+            if AuthOk then Break;
+          except
+            on E: Exception do
+              MessageDlg('Ошибка при авторизации: ' + E.Message, mtError, [mbOK], 0)
+          end
+        end
+        else
+          Break;
+      end;
+
+      if AuthOk then
+      begin
+        Application.CreateForm(TfrmPerson, frmPerson);
+  try
+          frmPerson.SetDataModule(dm);
+          frmPerson.ShowModal;
+        finally
+          frmPerson.Free;
+        end;
+      end;
     finally
-      FrmPerson.Free;
+      frmAuthorize.Free;
     end;
   finally
-    frmAutorize.Free;
     dm.Free;
   end;
-  Application.Run;
 end.

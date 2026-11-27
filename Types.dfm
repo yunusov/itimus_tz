@@ -1,7 +1,7 @@
 object frmTypes: TfrmTypes
-  Left = 0
-  Top = 0
-  BorderStyle = bsSingle
+  Left = 2
+  Top = 2
+  BorderStyle = bsDialog
   Caption = #1057#1087#1088#1072#1074#1086#1095#1085#1080#1082' '#1090#1080#1087#1086#1074' '#1082#1086#1085#1090#1072#1082#1090#1086#1074
   ClientHeight = 370
   ClientWidth = 427
@@ -64,7 +64,7 @@ object frmTypes: TfrmTypes
     Width = 427
     Height = 321
     Align = alTop
-    DataSource = dm.dsPerson
+    DataSource = dm.dsType
     Options = [dgTitles, dgIndicator, dgColumnResize, dgColLines, dgRowLines, dgTabs, dgConfirmDelete, dgCancelOnExit, dgTitleClick, dgTitleHotTrack]
     TabOrder = 1
     TitleFont.Charset = DEFAULT_CHARSET

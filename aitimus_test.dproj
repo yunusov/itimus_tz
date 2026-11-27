@@ -4,7 +4,7 @@
         <ProjectVersion>20.3</ProjectVersion>
         <FrameworkType>VCL</FrameworkType>
         <Base>True</Base>
-        <Config Condition="'$(Config)'==''">Debug</Config>
+        <Config Condition="'$(Config)'==''">Release</Config>
         <Platform Condition="'$(Platform)'==''">Win32</Platform>
         <ProjectName Condition="'$(ProjectName)'==''">aitimus_test</ProjectName>
         <TargetedPlatforms>3</TargetedPlatforms>
@@ -131,8 +131,8 @@
             <DesignClass>TfrmPerson</DesignClass>
         </DCCReference>
         <DCCReference Include="MainForm.pas">
-            <Form>frmAutorize</Form>
-            <DesignClass>TfrmAutorize</DesignClass>
+            <Form>frmAuthorize</Form>
+            <DesignClass>TfrmAuthorize</DesignClass>
         </DCCReference>
         <DCCReference Include="DataModule.pas">
             <Form>dm</Form>

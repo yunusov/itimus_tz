@@ -1,4 +1,5 @@
 object dm: Tdm
+  OnCreate = DataModuleCreate
   Height = 339
   Width = 295
   object FDPhysFBDriverLink1: TFDPhysFBDriverLink
@@ -9,13 +10,11 @@ object dm: Tdm
   end
   object FDConnection: TFDConnection
     Params.Strings = (
-      'User_Name=sysdba'
-      'Password=masterkey'
-      'Port=3050'
       'DriverID=FB'
-      'Database=J:\dev\delphi\firebird_data\my_database.fdb'
-      'CharacterSet=NONE')
+
+      'CharacterSet=WIN1251')
     LoginPrompt = False
+    AfterConnect = FDConnectionAfterConnect
     Left = 56
     Top = 16
   end

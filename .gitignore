@@ -81,3 +81,4 @@ __recovery/
 *.res
 *.vlb
 *.delphilsp.json
+config.ini
