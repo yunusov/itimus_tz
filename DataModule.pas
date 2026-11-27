@@ -16,6 +16,11 @@ type
     FDConnection: TFDConnection;
     dsPerson: TDataSource;
     qPerson: TFDQuery;
+    qType: TFDQuery;
+    dsType: TDataSource;
+    dsContact: TDataSource;
+    qContact: TFDQuery;
+    procedure dsPersonDataChange(Sender: TObject; Field: TField);
   private
     { Private declarations }
   public
@@ -25,5 +30,13 @@ type
 implementation
 
 {$R *.dfm}
+
+
+procedure Tdm.dsPersonDataChange(Sender: TObject; Field: TField);
+begin
+  qContact.Close;
+  qContact.ParamByName('P_PERSON_ID').AsInteger := qPerson.FieldByName('ID').AsInteger;
+  qContact.Open;
+end;
 
 end.

@@ -1,0 +1,5 @@
+=== QUERY OPEN ===
+SQL: select *
+from SP_GET_CONTACTS(:P_PERSON_ID)
+PARAMETERS:
+  P_PERSON_ID = 4 (DataType: 3)

@@ -22,7 +22,7 @@ object frmAutorize: TfrmAutorize
     EditLabel.Height = 15
     EditLabel.Caption = #1048#1084#1103' '#1087#1086#1083#1100#1079#1086#1074#1072#1090#1077#1083#1103
     TabOrder = 0
-    Text = 'sysdba'
+    Text = ''
   end
   object lePassword: TLabeledEdit
     Left = 8
@@ -34,7 +34,7 @@ object frmAutorize: TfrmAutorize
     EditLabel.Caption = #1055#1072#1088#1086#1083#1100
     PasswordChar = '*'
     TabOrder = 1
-    Text = 'masterkey'
+    Text = ''
   end
   object bCancel: TButton
     Left = 176
@@ -73,7 +73,7 @@ object frmAutorize: TfrmAutorize
     EditLabel.Height = 15
     EditLabel.Caption = #1055#1091#1090#1100' '#1082' '#1092#1072#1081#1083#1091' '#1041#1044
     TabOrder = 5
-    Text = 'J:\dev\delphi\firebird_data\my_database.fdb'
+    Text = ''
   end
   object OpenDialog1: TOpenDialog
     DefaultExt = 'fdb'

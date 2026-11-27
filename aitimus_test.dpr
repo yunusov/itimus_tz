@@ -5,7 +5,7 @@ uses
   Controls,
   Person in 'Person.pas' {frmPerson: TfrmPerson},
   MainForm in 'MainForm.pas' {frmAutorize: TfrmAutorize},
-  DataModule in 'DataModule.pas' {dm: Tdm};
+  DataModule in 'DataModule.pas' {dm: TDataModule};
 
 {$R *.res}
 
@@ -16,14 +16,14 @@ var
 begin
   Application.Initialize;
   Application.MainFormOnTaskbar := True;
+  dm := Tdm.Create(nil);
+  frmAutorize := TfrmAutorize.Create(nil);
   try
-    dm := Tdm.Create(nil);
-    frmAutorize := TfrmAutorize.Create(nil);
     frmAutorize.SetDataModule(dm);
     if frmAutorize.ShowModal=mrOk then
     try
       Application.CreateForm(TfrmPerson, frmPerson);
-      frmPerson.SetDataModule(dm);
+  frmPerson.SetDataModule(dm);
       frmPerson.ShowModal;
     finally
       FrmPerson.Free;
